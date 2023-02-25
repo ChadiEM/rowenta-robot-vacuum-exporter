@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+echo Release started. Last known tag is: "$(git describe --tags --abbrev=0 2>/dev/null || echo 'none')".
+echo Input next version:
+
+read -r next_version
+
+git tag "$next_version"
+git push origin "$next_version"
