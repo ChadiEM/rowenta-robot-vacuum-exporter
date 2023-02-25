@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -36,15 +35,16 @@ type Status struct {
 func GetStatus() (*Status, error) {
 	resp, err := http.Get(endpoint + "/get/status")
 	if err != nil {
-		fmt.Println("No response from request")
 		return nil, err
 	}
 
 	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
 
 	var result StatusResponse
 	if err := json.Unmarshal(body, &result); err != nil {
-		fmt.Println("Can not unmarshal JSON")
 		return nil, err
 	}
 
