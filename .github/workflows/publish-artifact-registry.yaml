@@ -47,7 +47,7 @@ jobs:
           gcloud auth configure-docker $REGION --quiet
 
       - name: Build and Push Docker Image to Artifact Registry
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: .
           push: true
