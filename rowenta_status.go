@@ -1,14 +1,8 @@
 package main
 
 import (
-	"encoding/json"
-	"io"
-	"net/http"
-	"os"
 	"time"
 )
-
-var endpoint = os.Getenv("ROWENTA_ENDPOINT")
 
 type StatusResponse struct {
 	Voltage      int    `json:"voltage"`
@@ -26,25 +20,15 @@ type StatusResponse struct {
 }
 
 type Status struct {
-	BatteryPercentage float64
-	BatteryVoltage    float64
-	Charging          float64
-	Uptime            float64
+	BatteryPercentage   float64
+	BatteryVoltageVolts float64
+	Charging            float64
+	UptimeSeconds       float64
 }
 
 func GetStatus() (*Status, error) {
-	resp, err := http.Get(endpoint + "/get/status")
+	result, err := ParseUrl[StatusResponse](endpoint + "/get/status")
 	if err != nil {
-		return nil, err
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var result StatusResponse
-	if err := json.Unmarshal(body, &result); err != nil {
 		return nil, err
 	}
 
@@ -61,10 +45,10 @@ func GetStatus() (*Status, error) {
 	diff := now.Sub(startupDate)
 
 	returnValue := &Status{
-		BatteryPercentage: float64(result.BatteryLevel) / float64(100),
-		BatteryVoltage:    float64(result.Voltage) / float64(1000),
-		Charging:          charging,
-		Uptime:            diff.Seconds(),
+		BatteryPercentage:   float64(result.BatteryLevel) / float64(100),
+		BatteryVoltageVolts: float64(result.Voltage) / float64(1000),
+		Charging:            charging,
+		UptimeSeconds:       diff.Seconds(),
 	}
 
 	return returnValue, nil
