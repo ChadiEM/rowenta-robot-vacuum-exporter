@@ -32,7 +32,12 @@ rowenta_uptime_seconds 1.253267660219385e+06
 
 ## Running with Docker
 
-`docker run -ti --rm -p 9101:9101 -e ROWENTA_ENDPOINT=http://rowenta.internal:8080 chadiem/rowenta-robot-vacuum-exporter:master`
+```
+docker run -ti --rm \
+  -p 9101:9101 \
+  -e ROWENTA_ENDPOINT=http://rowenta.internal:8080 \
+  chadiem/rowenta-robot-vacuum-exporter:master
+```
 
 The endpoint can be found by doing a nmap on the network.
 
