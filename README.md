@@ -32,6 +32,8 @@ rowenta_uptime_seconds 1.253267660219385e+06
 
 ## Running with Docker
 
+The endpoint can be found by doing a nmap on the network.
+
 ```
 docker run -ti --rm \
   -p 9101:9101 \
@@ -39,6 +41,7 @@ docker run -ti --rm \
   chadiem/rowenta-robot-vacuum-exporter:master
 ```
 
-The endpoint can be found by doing a nmap on the network.
+Metrics can then be accessed on: `http://localhost:9101/metrics`.
 
-It might be interesting later on to auto-discover it. Contributions are welcome!
+It might be interesting later on to auto-discover the endpoint instead of providing it manually.
+Contributions are welcome!
