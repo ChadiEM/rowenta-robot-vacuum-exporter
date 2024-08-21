@@ -2,7 +2,7 @@ module rowenta-robot-vacuum-exporter
 
 go 1.21
 
-require github.com/prometheus/client_golang v1.20.0
+require github.com/prometheus/client_golang v1.20.1
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
