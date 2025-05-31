@@ -11,7 +11,7 @@ ADD *.go ./
 RUN go build
 
 
-FROM alpine:3.21
+FROM alpine:3.22
 
 WORKDIR /
 
