@@ -1,19 +1,26 @@
-package main
+package collector
 
-import "github.com/prometheus/client_golang/prometheus"
+import (
+	"rowenta-robot-vacuum-exporter/internal/rowenta"
+
+	"github.com/prometheus/client_golang/prometheus"
+)
 
 type Collector struct {
+	endpoint          string
 	batteryPercentage *prometheus.Desc
 	batteryVoltage    *prometheus.Desc
 	charging          *prometheus.Desc
 	uptime            *prometheus.Desc
 	distanceDriven    *prometheus.Desc
+	areaCleaned       *prometheus.Desc
 	cleaningTime      *prometheus.Desc
 	totalRuns         *prometheus.Desc
 }
 
-func newCollector() *Collector {
+func New(endpoint string) *Collector {
 	return &Collector{
+		endpoint: endpoint,
 		batteryPercentage: prometheus.NewDesc("rowenta_battery_level",
 			"Battery Percentage",
 			nil, nil,
@@ -34,6 +41,10 @@ func newCollector() *Collector {
 			"Distance travelled in meters",
 			nil, nil,
 		),
+		areaCleaned: prometheus.NewDesc("rowenta_area_cleaned_square_meters",
+			"Area cleaned in square meters",
+			nil, nil,
+		),
 		cleaningTime: prometheus.NewDesc("rowenta_clean_time_seconds",
 			"Time spent cleaning time in seconds",
 			nil, nil,
@@ -51,12 +62,13 @@ func (collector *Collector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- collector.charging
 	ch <- collector.uptime
 	ch <- collector.distanceDriven
+	ch <- collector.areaCleaned
 	ch <- collector.cleaningTime
 	ch <- collector.totalRuns
 }
 
 func (collector *Collector) Collect(ch chan<- prometheus.Metric) {
-	status, err := GetStatus()
+	status, err := rowenta.GetStatus(collector.endpoint)
 	if err != nil {
 		ch <- prometheus.NewInvalidMetric(
 			prometheus.NewDesc("rowenta_status_error",
@@ -69,7 +81,7 @@ func (collector *Collector) Collect(ch chan<- prometheus.Metric) {
 		ch <- prometheus.MustNewConstMetric(collector.uptime, prometheus.GaugeValue, status.UptimeSeconds)
 	}
 
-	statistics, err := GetPermanentStatistics()
+	statistics, err := rowenta.GetPermanentStatistics(collector.endpoint)
 	if err != nil {
 		ch <- prometheus.NewInvalidMetric(
 			prometheus.NewDesc("rowenta_statistics_error",
@@ -77,6 +89,7 @@ func (collector *Collector) Collect(ch chan<- prometheus.Metric) {
 			err)
 	} else {
 		ch <- prometheus.MustNewConstMetric(collector.distanceDriven, prometheus.CounterValue, statistics.TotalDistanceDrivenMeters)
+		ch <- prometheus.MustNewConstMetric(collector.areaCleaned, prometheus.CounterValue, statistics.TotalAreaCleanedMeters2)
 		ch <- prometheus.MustNewConstMetric(collector.cleaningTime, prometheus.CounterValue, statistics.TotalCleaningTimeSeconds)
 		ch <- prometheus.MustNewConstMetric(collector.totalRuns, prometheus.CounterValue, statistics.TotalNumberOfCleaningRuns)
 	}

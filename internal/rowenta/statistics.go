@@ -1,7 +1,7 @@
-package main
+package rowenta
 
 import (
-	"time"
+	"rowenta-robot-vacuum-exporter/internal/parser"
 )
 
 type PermanentStatisticsResponse struct {
@@ -13,19 +13,21 @@ type PermanentStatisticsResponse struct {
 
 type PermanentStatistics struct {
 	TotalDistanceDrivenMeters float64
+	TotalAreaCleanedMeters2   float64
 	TotalCleaningTimeSeconds  float64
 	TotalNumberOfCleaningRuns float64
 }
 
-func GetPermanentStatistics() (*PermanentStatistics, error) {
-	result, err := ParseUrl[PermanentStatisticsResponse](endpoint + "/get/permanent_statistics")
+func GetPermanentStatistics(endpoint string) (*PermanentStatistics, error) {
+	result, err := parser.ParseURL[PermanentStatisticsResponse](endpoint + "/get/permanent_statistics")
 	if err != nil {
 		return nil, err
 	}
 
 	returnValue := &PermanentStatistics{
-		TotalDistanceDrivenMeters: float64(result.TotalDistanceDriven) / 100.0,
-		TotalCleaningTimeSeconds:  (time.Duration(result.TotalCleaningTime) * time.Minute).Seconds(),
+		TotalDistanceDrivenMeters: float64(result.TotalDistanceDriven) / 128.0,
+		TotalAreaCleanedMeters2:   float64(result.TotalAreaCleaned) / 64.0,
+		TotalCleaningTimeSeconds:  float64(result.TotalCleaningTime) * 3600.0 / 64.0,
 		TotalNumberOfCleaningRuns: float64(result.TotalNumberOfCleaningRuns),
 	}
 

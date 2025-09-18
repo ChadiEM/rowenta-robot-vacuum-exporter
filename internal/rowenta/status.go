@@ -1,6 +1,7 @@
-package main
+package rowenta
 
 import (
+	"rowenta-robot-vacuum-exporter/internal/parser"
 	"time"
 )
 
@@ -26,8 +27,8 @@ type Status struct {
 	UptimeSeconds       float64
 }
 
-func GetStatus() (*Status, error) {
-	result, err := ParseUrl[StatusResponse](endpoint + "/get/status")
+func GetStatus(endpoint string) (*Status, error) {
+	result, err := parser.ParseURL[StatusResponse](endpoint + "/get/status")
 	if err != nil {
 		return nil, err
 	}

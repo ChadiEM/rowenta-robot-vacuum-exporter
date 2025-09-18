@@ -1,4 +1,4 @@
-FROM golang:1.24-alpine as build
+FROM golang:1.24-alpine AS build
 
 WORKDIR /app
 
@@ -6,10 +6,9 @@ COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
 
-ADD *.go ./
+COPY . .
 
-RUN go build
-
+RUN CGO_ENABLED=0 go build -o rowenta-robot-vacuum-exporter -ldflags "-s -w" /app/cmd/rowenta-robot-vacuum-exporter
 
 FROM alpine:3.22
 
