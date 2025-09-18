@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-push-registry:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     env:
       REGION: europe-west3-docker.pkg.dev
