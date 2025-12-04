@@ -10,7 +10,7 @@ COPY . .
 
 RUN CGO_ENABLED=0 go build -o rowenta-robot-vacuum-exporter -ldflags "-s -w" /app/cmd/rowenta-robot-vacuum-exporter
 
-FROM alpine:3.22
+FROM alpine:3.23
 
 WORKDIR /
 
